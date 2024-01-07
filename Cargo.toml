@@ -1,0 +1,9 @@
+[package]
+name = "rasponic"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.6.20"
+rppal = "0.14.1"
+tokio = { version = "1.32.0", features = ["full"] }
