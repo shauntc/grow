@@ -1,3 +1,11 @@
-@rpi_url = 192.168.86.38:3000
+@rpi_url = 192.168.86.49:3000
 
 http://{{rpi_url}}
+
+###
+
+http://{{rpi_url}}/humidity
+
+###
+
+http://{{rpi_url}}/humidity/list
