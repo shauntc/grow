@@ -22,6 +22,8 @@ mod options {
         Kill,
         /// Build, upload, enable execution, and run the 'pi' binary on the raspberry pi
         Dev,
+        /// Upload and run the 'pi' binary on the raspberry pi
+        Deploy,
     }
 
     #[derive(Debug, clap::Parser)]
@@ -73,6 +75,7 @@ fn main() -> Result<()> {
             Actions::EnableExecution,
             Actions::Run,
         ],
+        C::Deploy => vec![Actions::Upload, Actions::EnableExecution, Actions::Run],
     };
 
     for action in actions {
