@@ -9,5 +9,11 @@ http://{{rpi_url}}/humidity
 http://{{rpi_url}}/humidity/list
 
 ### toggle relay
-@relay_id = 1
-http://{{rpi_url}}/relay/{{relay_id}}
+@relay_id = 2
+http://{{rpi_url}}/relay/{{relay_id}}/toggle
+
+### turn relay on
+http://{{rpi_url}}/relay/{{relay_id}}/on
+
+### turn relay off
+http://{{rpi_url}}/relay/{{relay_id}}/off

@@ -55,11 +55,17 @@ async fn main() -> Result<()> {
         .route("/humidity/list", get(list_humidity))
         .with_state(humidity_state)
         .route("/flash", get(flash_led))
-        .route("/relay/1", get(toggle_relay))
+        .route("/relay/1/toggle", get(toggle_relay))
+        .route("/relay/1/on", get(relay_on))
+        .route("/relay/1/off", get(relay_off))
         .with_state(relay_1)
-        .route("/relay/2", get(toggle_relay))
+        .route("/relay/2/toggle", get(toggle_relay))
+        .route("/relay/2/on", get(relay_on))
+        .route("/relay/2/off", get(relay_off))
         .with_state(relay_2)
-        .route("/relay/3", get(toggle_relay))
+        .route("/relay/3/toggle", get(toggle_relay))
+        .route("/relay/3/on", get(relay_on))
+        .route("/relay/3/off", get(relay_off))
         .with_state(relay_3);
 
     // run it with hyper on localhost:3000
@@ -105,6 +111,19 @@ async fn toggle_relay(State(relay): State<RelayState>) -> StatusCode {
     } else {
         relay.on();
     }
+
+    StatusCode::OK
+}
+async fn relay_on(State(relay): State<RelayState>) -> StatusCode {
+    let mut relay = relay.write().await;
+    relay.on();
+
+    StatusCode::OK
+}
+
+async fn relay_off(State(relay): State<RelayState>) -> StatusCode {
+    let mut relay = relay.write().await;
+    relay.off();
 
     StatusCode::OK
 }
