@@ -1,11 +1,13 @@
-@rpi_url = 192.168.86.49:3000
+@rpi_url = pi-grow.local:3000
 
 http://{{rpi_url}}
 
-###
-
+### Most recent humidity value
 http://{{rpi_url}}/humidity
 
-###
-
+### List Humidity Values
 http://{{rpi_url}}/humidity/list
+
+### toggle relay
+@relay_id = 1
+http://{{rpi_url}}/relay/{{relay_id}}

@@ -1,0 +1,14 @@
+[package]
+name = "pi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.79"
+axum = "0.7.3"
+chrono = { version = "0.4.31", features = ["serde"] }
+embedded-hal = "*"
+rppal = { version = "0.16.1", features = ["hal"] }
+serde = { version = "1.0.195", features = ["derive"] }
+thiserror = "1.0.56"
+tokio = { version = "1.32.0", features = ["full"] }

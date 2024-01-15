@@ -1,10 +1,12 @@
 mod circular;
 mod humidity;
+mod relay;
 
 use anyhow::Result;
 use axum::{extract::State, http::StatusCode, routing::get, Router};
 use circular::Circular;
 use humidity::Update;
+use relay::Relay;
 use rppal::gpio::Gpio;
 use std::{env, future::IntoFuture, sync::Arc};
 
@@ -14,12 +16,13 @@ use tokio::{
 };
 
 type HumidityState = Arc<RwLock<Circular<humidity::Reading, 10>>>;
+type RelayState = Arc<RwLock<Relay>>;
 
 // Pins
 const GPIO_HUMIDITY: u8 = 23;
-// const GPIO_RELAY_1: u8 = 17;
-// const GPIO_RELAY_2: u8 = 27;
-// const GPIO_RELAY_3: u8 = 22;
+const GPIO_RELAY_1: u8 = 17;
+const GPIO_RELAY_2: u8 = 27;
+const GPIO_RELAY_3: u8 = 22;
 
 impl Update for Circular<humidity::Reading, 10> {
     fn update(&mut self, reading: humidity::Reading) {
@@ -31,22 +34,33 @@ impl Update for Circular<humidity::Reading, 10> {
 async fn main() -> Result<()> {
     println!("Running {}...", env::current_exe().unwrap().display());
 
+    // humidity sensor setup
     let humidity_tracker = humidity::Tracker::new(humidity::SensorType::Dht22, GPIO_HUMIDITY)?;
     let humidity_state: HumidityState = Arc::new(RwLock::new(Circular::new()));
-
     let update_task = humidity::start_tracking(
         humidity_state.clone(),
         humidity_tracker,
         interval(Duration::from_secs(2)),
     );
 
+    // relay setup
+    let relay_1 = Arc::new(RwLock::new(Relay::new(GPIO_RELAY_1)?));
+    let relay_2 = Arc::new(RwLock::new(Relay::new(GPIO_RELAY_2)?));
+    let relay_3 = Arc::new(RwLock::new(Relay::new(GPIO_RELAY_3)?));
+
     // build our application with a single route
     let app = Router::new()
         .route("/", get(|| async { "Hello, Grow!" }))
         .route("/humidity", get(get_humidity))
         .route("/humidity/list", get(list_humidity))
+        .with_state(humidity_state)
         .route("/flash", get(flash_led))
-        .with_state(humidity_state);
+        .route("/relay/1", get(toggle_relay))
+        .with_state(relay_1)
+        .route("/relay/2", get(toggle_relay))
+        .with_state(relay_2)
+        .route("/relay/3", get(toggle_relay))
+        .with_state(relay_3);
 
     // run it with hyper on localhost:3000
     // run our app with hyper, listening globally on port 3000
@@ -82,6 +96,17 @@ async fn get_humidity(State(tracker): State<HumidityState>) -> String {
         ),
         None => "No data".to_owned(),
     }
+}
+
+async fn toggle_relay(State(relay): State<RelayState>) -> StatusCode {
+    let mut relay = relay.write().await;
+    if relay.on {
+        relay.off();
+    } else {
+        relay.on();
+    }
+
+    StatusCode::OK
 }
 
 async fn flash_led() -> StatusCode {
