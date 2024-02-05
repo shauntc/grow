@@ -10,7 +10,7 @@ use chrono::DateTime;
 use serde::{Deserialize, Serialize};
 use tokio::{sync::RwLock, task::JoinHandle, time::Interval};
 
-use device::Measurement;
+pub use device::Measurement;
 pub use error::{Error, Result};
 pub use tracker::Tracker;
 

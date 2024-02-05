@@ -3,6 +3,9 @@
         "aarch",
         "chrono",
         "GPIO",
+        "leptos",
+        "nums",
+        "oneshot",
         "rppal",
         "thiserror"
     ]

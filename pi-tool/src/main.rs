@@ -1,4 +1,4 @@
-use std::process;
+use std::{process, thread::sleep, time::Duration};
 
 use anyhow::Result;
 use clap::Parser;
@@ -75,7 +75,12 @@ fn main() -> Result<()> {
             Actions::EnableExecution,
             Actions::Run,
         ],
-        C::Deploy => vec![Actions::Upload, Actions::EnableExecution, Actions::Run],
+        C::Deploy => vec![
+            Actions::Kill,
+            Actions::Upload,
+            Actions::EnableExecution,
+            Actions::Run,
+        ],
     };
 
     for action in actions {
@@ -100,6 +105,7 @@ fn main() -> Result<()> {
                 &pi_bin_path(&bin_name),
             )?,
         }
+        sleep(Duration::from_secs(1));
     }
 
     Ok(())
